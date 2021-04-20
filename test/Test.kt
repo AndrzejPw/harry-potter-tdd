@@ -104,18 +104,21 @@ object PriceCalculator {
     private fun putBooksIntoSeries(books: IntArray): MutableList<MutableSet<Int>> {
         val bookSeries = mutableListOf<MutableSet<Int>>()
         for (book in books) {
-            var addedToExistingSerie = false
-            for (bookSerie in bookSeries) {
-                if (!bookSerie.contains(book)) {
-                    bookSerie.add(book)
-                    addedToExistingSerie = true
-                    break
-                }
-            }
+            var addedToExistingSerie = tryPutBookIntoExistingSerie(book, bookSeries)
             if (!addedToExistingSerie) {
                 bookSeries.add(mutableSetOf(book))
             }
         }
         return bookSeries
+    }
+
+    private fun tryPutBookIntoExistingSerie(book: Int, bookSeries: List<MutableSet<Int>>): Boolean {
+        for (bookSerie in bookSeries) {
+            if (!bookSerie.contains(book)) {
+                bookSerie.add(book)
+                return true
+            }
+        }
+        return false
     }
 }
