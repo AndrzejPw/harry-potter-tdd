@@ -48,19 +48,19 @@ class Test {
     }
 
     @Test
-    fun `two different books should have 5% discount`() {
+    fun `two different books should have 5 percent discount`() {
         val total = PriceCalculator.price(1, 2)
         assertThat(total).isEqualTo(1520)
     }
 
     @Test
-    fun `two different books should have 5% discount one should be not discouted`() {
+    fun `two different books should have 5 percent discount one should be not discouted`() {
         val total = PriceCalculator.price(1, 2, 1)
         assertThat(total).isEqualTo(2320)
     }
 
     @Test
-    fun `three different books should have 10% discount and one not be discounted`() {
+    fun `three different books should have 10 percent discount and one not be discounted`() {
         val total = PriceCalculator.price(1, 2, 3, 1)
         assertThat(total).isEqualTo(2960)
     }
