@@ -71,6 +71,19 @@ class Test {
         assertThat(total).isEqualTo((10 * 800 * 0.75).toInt())
     }
 
+    @Test
+    fun `2 series of 4 are better than series of 5 and series of 3 `() {
+        val total = PriceCalculator.price(1, 1, 2, 2, 3, 3, 4, 5)
+        assertThat(total).isEqualTo((5120).toInt())
+    }
+
+    @Test
+    fun `another edge case`() {
+        val total = PriceCalculator.price(1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5)
+        assertThat(total).isEqualTo((3 * (800 * 5 * 0.75) + 2 * (800 * 4 * 0.8)).toInt())
+    }
+
+
 }
 
 object PriceCalculator {
@@ -80,6 +93,7 @@ object PriceCalculator {
     public fun price(vararg books: Int): Int {
         books.forEach { if (it !in BOOKS_ID_RANGE) throw IllegalArgumentException("Book id should be 1...5") }
         val bookSeries = putBooksIntoSeries(books)
+        optimizeSeries(bookSeries)
         var total = 0
         for (bookSerie in bookSeries) {
             if (bookSerie.size == 1) {
@@ -90,6 +104,25 @@ object PriceCalculator {
         }
 
         return total
+    }
+
+    // because 2 series of 4 are better than 5 + 3 it will try to move book from 5-sets to 3-sets
+    private fun optimizeSeries(bookSeries: List<MutableSet<Int>>) {
+        //we know that list is in descending order of set size
+        var startIndex = 0
+        var endIndex = bookSeries.size - 1
+        while (startIndex < endIndex) {
+            if (bookSeries[startIndex].size < 5 || bookSeries[endIndex].size > 3) {
+                return
+            }
+            if (bookSeries[endIndex].size == 3) {
+                val bookToMove = bookSeries[startIndex].find { !bookSeries[endIndex].contains(it) }!!
+                bookSeries[startIndex].remove(bookToMove)
+                bookSeries[endIndex].add(bookToMove)
+                startIndex++
+            }
+            endIndex--
+        }
     }
 
     private fun discountBasedOnCount(count: Int): Double = when (count) {
